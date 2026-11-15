@@ -23,6 +23,8 @@ button{cursor:pointer;font-family:inherit;}
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
 .auth-card{width:420px;max-width:100%;background:transparent;border:none;border-radius:0;padding:30px 28px;}
 .auth-logo{text-align:center;font-size:38px;margin-bottom:6px;}
+.auth-logo img{width:72px;height:72px;border-radius:14px;object-fit:cover;}
+.app-title img{width:28px;height:28px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:6px;}
 .auth-title{text-align:center;font-size:19px;font-weight:800;margin-bottom:4px;}
 .auth-subtitle{text-align:center;font-size:12px;color:var(--text-dim);margin-bottom:20px;}
 .form-group{margin-bottom:13px;}
@@ -101,7 +103,7 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
 <!-- ===================== LOGIN ===================== -->
 <div id="pageLogin" class="auth-wrap">
   <div class="auth-card">
-    <div class="auth-logo">🔐</div>
+    <div class="auth-logo"><img src="logo.jpg" alt="FinWise"></div>
     <div class="auth-title">ĐĂNG NHẬP</div>
     <div class="auth-subtitle">Vui lòng đăng nhập để quản lý sổ chi tiêu</div>
     <div class="form-group"><label>Tên đăng nhập:</label><input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập..."></div>
@@ -115,7 +117,7 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
 <!-- ===================== REGISTER ===================== -->
 <div id="pageRegister" class="auth-wrap hidden">
   <div class="auth-card">
-    <div class="auth-logo">📝</div>
+    <div class="auth-logo"><img src="logo.jpg" alt="FinWise"></div>
     <div class="auth-title">ĐĂNG KÝ TÀI KHOẢN</div>
     <div class="auth-subtitle">Tạo tài khoản mới để bắt đầu ghi chép chi tiêu</div>
     <div class="form-group"><label>Họ và tên:</label><input type="text" id="regFullname" placeholder="Nhập họ và tên của bạn..."></div>
@@ -134,7 +136,7 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
   <div class="app-wrap">
     <div class="app-header">
       <div>
-        <div class="app-title">💰 SỔ QUẢN LÝ CHI TIÊU CÁ NHÂN</div>
+        <div class="app-title"><img src="logo.jpg" alt="FinWise">SỔ QUẢN LÝ CHI TIÊU CÁ NHÂN</div>
         <div class="app-subtitle2" id="lblSubtitle"></div>
       </div>
       <div class="header-actions">
