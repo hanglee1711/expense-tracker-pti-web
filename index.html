@@ -6,13 +6,14 @@
 <title>Quản Lý Chi Tiêu Cá Nhân - Expense Tracker</title>
 <style>
 :root{
-  --bg:#f4f6f9; --card:#ffffff; --border:#d7dce3; --text:#1a1a1a; --text-dim:#6b7280;
+  --bg:#f0f0f0; --card:#ffffff; --border:#a6a6a6; --text:#000000; --text-dim:#5c5c5c;
   --primary:#2563eb; --primary-hover:#1d4ed8; --success:#16a34a; --danger:#dc2626; --warn:#d97706; --blue:#2563eb;
 }
 body.dark{
   --bg:#2b2b2b; --card:#353535; --border:#4a4a4a; --text:#ffffff; --text-dim:#bdbdbd;
   --primary:#3b82f6; --primary-hover:#2563eb;
 }
+body.dark th{background:#404040;}
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;transition:background .2s,color .2s;}
 .hidden{display:none !important;}
@@ -20,8 +21,8 @@ button{cursor:pointer;font-family:inherit;}
 
 /* ---------- Auth ---------- */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
-.auth-card{width:420px;max-width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:30px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
-.auth-logo{text-align:center;font-size:30px;margin-bottom:6px;}
+.auth-card{width:420px;max-width:100%;background:transparent;border:none;border-radius:0;padding:30px 28px;}
+.auth-logo{text-align:center;font-size:38px;margin-bottom:6px;}
 .auth-title{text-align:center;font-size:19px;font-weight:800;margin-bottom:4px;}
 .auth-subtitle{text-align:center;font-size:12px;color:var(--text-dim);margin-bottom:20px;}
 .form-group{margin-bottom:13px;}
@@ -33,10 +34,10 @@ button{cursor:pointer;font-family:inherit;}
 .link-plain{background:none;border:none;color:var(--primary);text-decoration:underline;font-size:12px;cursor:pointer;padding:0;}
 
 /* ---------- Inputs / buttons ---------- */
-input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);}
-.btn{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 14px;font-weight:700;color:var(--text);}
-.btn:hover{background:var(--bg);}
+input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:3px;padding:7px 10px;color:var(--text);font-family:inherit;font-size:13px;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#4a90d9;border-width:1.5px;}
+.btn{background:#e6e6e6;border:1px solid #adadad;border-radius:3px;padding:8px 14px;font-weight:400;color:var(--text);}
+.btn:hover{background:#d9d9d9;}
 .btn-primary{background:var(--primary);border:none;color:#fff;}
 .btn-primary:hover{background:var(--primary-hover);}
 .btn-success{background:var(--success);border:none;color:#fff;}
@@ -53,28 +54,30 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .header-actions{display:flex;gap:8px;flex-wrap:wrap;}
 
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
-.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
-.kpi-title{font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;}
-.kpi-value{font-size:19px;font-weight:800;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:14px;}
+.kpi-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.kpi-value{font-size:16px;font-weight:600;color:var(--text);}
 
-.budget-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;}
+.budget-card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:16px;}
 .budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
 .budget-top b{font-weight:700;}
-.pbar{height:16px;border-radius:8px;background:var(--border);overflow:hidden;position:relative;margin-bottom:6px;}
+.pbar{height:14px;border-radius:3px;background:var(--border);overflow:hidden;position:relative;margin-bottom:6px;}
 .pbar-fill{height:100%;background:var(--success);transition:width .2s;}
 .budget-status{font-size:12px;font-weight:700;}
 
 .grid-2{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:16px;}
 .card h3{margin:0 0 12px;font-size:14px;}
-.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
-.filter-row label{font-size:12px;color:var(--text-dim);white-space:nowrap;}
+.filter-row label{font-size:12px;color:var(--text);white-space:nowrap;}
 .filter-row input{flex:1;min-width:140px;}
 
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-th{background:var(--bg);color:var(--text-dim);padding:8px;font-weight:700;border-bottom:1px solid var(--border);text-align:center;font-size:12px;white-space:nowrap;}
-td{padding:7px 9px;border-bottom:1px solid var(--border);text-align:center;font-size:12px;}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;table-layout:auto;}
+th{background:var(--bg);color:var(--text);padding:8px;font-weight:700;border:1px solid var(--border);text-align:center;font-size:12px;white-space:nowrap;}
+th.col-note,td.col-note{width:100%;}
+td{padding:7px 9px;border-bottom:1px solid var(--border);text-align:center;font-size:12px;white-space:nowrap;}
+td.col-note{white-space:normal;}
 tbody tr[data-id]{cursor:pointer;}
 tbody tr[data-id]:hover td{background:var(--bg);}
 tbody tr.selected td{background:#dbeafe !important;color:#1e3a8a;}
@@ -87,7 +90,7 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
 
 /* ---------- Modal ---------- */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:400px;max-width:100%;max-height:88vh;overflow:auto;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:24px;width:400px;max-width:100%;max-height:88vh;overflow:auto;}
 .modal-title{font-size:15px;font-weight:800;margin:0 0 14px;}
 .modal-msg{color:var(--text);font-size:13px;line-height:1.6;white-space:pre-line;}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
@@ -132,29 +135,29 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
     <div class="app-header">
       <div>
         <div class="app-title">💰 SỔ QUẢN LÝ CHI TIÊU CÁ NHÂN</div>
-        <div class="app-subtitle">Theo dõi thu nhập, chi tiêu và kiểm soát tài chính thông minh</div>
         <div class="app-subtitle2" id="lblSubtitle"></div>
       </div>
       <div class="header-actions">
         <button class="btn" id="btnTheme">🌙 Chế độ tối</button>
         <button class="btn" id="btnSetBudget">⚙️ Đặt Ngân Sách</button>
         <button class="btn" id="btnChangePassword">🔑 Đổi Mật Khẩu</button>
-        <button class="btn btn-danger" id="btnLogout">🚪 Đăng Xuất</button>
+        <button class="btn" id="btnLogout">🚪 Đăng Xuất</button>
       </div>
     </div>
 
     <div class="kpi-row">
-      <div class="kpi-card"><div class="kpi-title">🟢 Tổng Thu Nhập</div><div class="kpi-value" id="lblTongThu" style="color:var(--success)">0 đ</div></div>
-      <div class="kpi-card"><div class="kpi-title">🔴 Tổng Chi Tiêu</div><div class="kpi-value" id="lblTongChi" style="color:var(--danger)">0 đ</div></div>
+      <div class="kpi-card"><div class="kpi-title">🟢 Tổng Thu Nhập</div><div class="kpi-value" id="lblTongThu">0 đ</div></div>
+      <div class="kpi-card"><div class="kpi-title">🔴 Tổng Chi Tiêu</div><div class="kpi-value" id="lblTongChi">0 đ</div></div>
       <div class="kpi-card"><div class="kpi-title">🔵 Số Dư Còn Lại</div><div class="kpi-value" id="lblSoDu">0 đ</div></div>
     </div>
 
     <div class="budget-card">
       <div class="budget-top">
-        <span>⚠️ Ngân Sách Tháng: <b id="lblHanMuc">5.000.000 đ</b></span>
-        <span class="budget-status" id="lblCanhBao">Đã chi: 0%</span>
+        <span>⚠️ Ngân Sách Tháng:</span>
+        <b id="lblHanMuc">5.000.000 đ</b>
       </div>
       <div class="pbar"><div class="pbar-fill" id="barNganSach" style="width:0%"></div></div>
+      <span class="budget-status" id="lblCanhBao">Đã chi: 0%</span>
     </div>
 
     <div class="grid-2">
@@ -165,7 +168,7 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
           <select id="cboLoai"><option>Chi tiêu</option><option>Thu nhập</option></select>
         </div>
         <div class="form-group"><label>Danh mục:</label>
-          <input type="text" id="cboDanhMuc" list="categoryList" placeholder="Chọn hoặc nhập danh mục...">
+          <input type="text" id="cboDanhMuc" list="categoryList" value="Ăn uống">
           <datalist id="categoryList">
             <option value="Ăn uống"></option><option value="Đi lại, xăng xe"></option><option value="Mua sắm"></option>
             <option value="Hóa đơn & Tiện ích"></option><option value="Tiền nhà / Phòng trọ"></option><option value="Giải trí & Bạn bè"></option>
@@ -175,9 +178,9 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
         <div class="form-group"><label>Số tiền (VNĐ):</label><input type="text" id="txtSoTien" placeholder="Ví dụ: 50000"></div>
         <div class="form-group"><label>Ghi chú / Chi tiết:</label><input type="text" id="txtGhiChu" placeholder="Ví dụ: Ăn phở bò sáng..."></div>
         <div class="action-row">
-          <button class="btn btn-primary" id="btnThem">➕ Thêm</button>
+          <button class="btn" id="btnThem">➕ Thêm</button>
           <button class="btn" id="btnSua">✏️ Sửa</button>
-          <button class="btn btn-danger" id="btnXoa">🗑️ Xóa</button>
+          <button class="btn" id="btnXoa">🗑️ Xóa</button>
           <button class="btn" id="btnLamMoi">🔄 Làm Mới</button>
         </div>
       </div>
@@ -193,11 +196,10 @@ body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
           <button class="btn" id="btnLamMoiBang">🔄 Tải lại</button>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>Ngày</th><th>Loại</th><th>Danh Mục</th><th>Số Tiền</th><th>Ghi Chú</th></tr></thead><tbody id="tblBody"></tbody></table>
+          <table><thead><tr><th>Ngày</th><th>Loại</th><th>Danh Mục</th><th>Số Tiền</th><th class="col-note">Ghi Chú</th></tr></thead><tbody id="tblBody"></tbody></table>
         </div>
         <div class="table-footer">
           <span id="lblStatus">Hiển thị 0 / 0 giao dịch</span>
-          <span id="lblTotalCount">Tổng số: 0 giao dịch</span>
         </div>
       </div>
     </div>
@@ -302,8 +304,12 @@ function handleRegister(){
   DB.transactions[username]=[];
   saveData();
   showAlert('Thông báo','Đăng ký thành công! Hãy đăng nhập.', ()=>{
-    document.getElementById('loginUsername').value=username;
-    document.getElementById('loginPassword').value='';
+    document.getElementById('regFullname').value='';
+    document.getElementById('regUsername').value='';
+    document.getElementById('regEmail').value='';
+    document.getElementById('regPassword').value='';
+    document.getElementById('regConfirm').value='';
+    msgEl.textContent='';
     const le=document.getElementById('loginMsg'); le.textContent='Đăng ký thành công! Hãy đăng nhập.'; le.className='form-error success';
     showPage('pageLogin');
   });
@@ -325,7 +331,7 @@ function saveUserTransactions(list){ DB.transactions[currentUser]=list; saveData
 function toggleTheme(){
   isDarkMode=!isDarkMode;
   document.body.classList.toggle('dark', isDarkMode);
-  document.getElementById('btnTheme').textContent = isDarkMode ? '☀️ Chế độ sáng' : '🌙 Chế độ tối';
+  document.getElementById('btnTheme').textContent = isDarkMode ? 'Chế độ sáng' : 'Chế độ tối';
 }
 function openSetBudget(){
   openModal(`
@@ -368,6 +374,10 @@ async function handleLogout(){
   const ok=await showConfirm('Đăng xuất','Bạn có muốn đăng xuất không?');
   if(ok){
     currentUser=null;
+    selectedTransactionId=null;
+    isDarkMode=false;
+    document.body.classList.remove('dark');
+    document.getElementById('btnTheme').textContent='🌙 Chế độ tối';
     document.getElementById('loginPassword').value='';
     showPage('pageLogin');
   }
@@ -431,12 +441,11 @@ function loadTransactions(){
     const color = t.type==='Thu nhập' ? 'var(--success)' : 'var(--danger)';
     return `<tr data-id="${t.id}" class="${selectedTransactionId===t.id?'selected':''}">
       <td>${esc(t.date)}</td><td style="color:${color}">${esc(t.type)}</td><td>${esc(t.category)}</td>
-      <td style="text-align:right;color:${color}">${formatMoney(t.amount)}</td><td style="text-align:left">${esc(t.note||'')}</td></tr>`;
+      <td style="text-align:right;color:${color}">${formatMoney(t.amount)}</td><td class="col-note" style="text-align:left">${esc(t.note||'')}</td></tr>`;
   }).join('') || `<tr><td colspan="5" class="empty-row">Không có giao dịch nào</td></tr>`;
   tbody.querySelectorAll('tr[data-id]').forEach(row=>row.addEventListener('click',()=>{ selectRow(parseInt(row.dataset.id)); }));
 
   document.getElementById('lblStatus').textContent=`Hiển thị ${filtered.length} / ${transactions.length} giao dịch`;
-  document.getElementById('lblTotalCount').textContent=`Tổng số: ${transactions.length} giao dịch`;
 }
 function selectRow(id){
   selectedTransactionId=id;
@@ -507,7 +516,7 @@ function lamMoiForm(){
   selectedTransactionId=null;
   document.getElementById('dateNgay').value=todayStr();
   document.getElementById('cboLoai').value='Chi tiêu';
-  document.getElementById('cboDanhMuc').value='';
+  document.getElementById('cboDanhMuc').value='Ăn uống';
   document.getElementById('txtSoTien').value='';
   document.getElementById('txtGhiChu').value='';
   loadTransactions();
