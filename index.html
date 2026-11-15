@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Lý Chi Tiêu Cá Nhân - Expense Tracker</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --border:#d7dce3; --text:#1a1a1a; --text-dim:#6b7280;
+  --primary:#2563eb; --primary-hover:#1d4ed8; --success:#16a34a; --danger:#dc2626; --warn:#d97706; --blue:#2563eb;
+}
+body.dark{
+  --bg:#2b2b2b; --card:#353535; --border:#4a4a4a; --text:#ffffff; --text-dim:#bdbdbd;
+  --primary:#3b82f6; --primary-hover:#2563eb;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;transition:background .2s,color .2s;}
+.hidden{display:none !important;}
+button{cursor:pointer;font-family:inherit;}
+
+/* ---------- Auth ---------- */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
+.auth-card{width:420px;max-width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:30px 28px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.auth-logo{text-align:center;font-size:30px;margin-bottom:6px;}
+.auth-title{text-align:center;font-size:19px;font-weight:800;margin-bottom:4px;}
+.auth-subtitle{text-align:center;font-size:12px;color:var(--text-dim);margin-bottom:20px;}
+.form-group{margin-bottom:13px;}
+.form-group label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;}
+.form-error{min-height:18px;font-size:12px;font-weight:600;color:var(--danger);margin-bottom:6px;}
+.form-error.success{color:var(--success);}
+.auth-footer{text-align:center;font-size:12px;margin-top:14px;}
+.link-plain{background:none;border:none;color:var(--primary);text-decoration:underline;font-size:12px;cursor:pointer;padding:0;}
+
+/* ---------- Inputs / buttons ---------- */
+input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);}
+.btn{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 14px;font-weight:700;color:var(--text);}
+.btn:hover{background:var(--bg);}
+.btn-primary{background:var(--primary);border:none;color:#fff;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-success{background:var(--success);border:none;color:#fff;}
+.btn-danger{background:var(--danger);border:none;color:#fff;}
+.btn-block{width:100%;}
+
+/* ---------- App shell ---------- */
+#pageApp{min-height:100vh;}
+.app-wrap{max-width:1360px;margin:0 auto;padding:18px 22px 40px;}
+.app-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.app-title{font-size:19px;font-weight:800;margin-bottom:2px;}
+.app-subtitle{font-size:12px;color:var(--text-dim);}
+.app-subtitle2{font-size:12px;font-weight:700;margin-top:4px;}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.kpi-title{font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;}
+.kpi-value{font-size:19px;font-weight:800;}
+
+.budget-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.budget-top b{font-weight:700;}
+.pbar{height:16px;border-radius:8px;background:var(--border);overflow:hidden;position:relative;margin-bottom:6px;}
+.pbar-fill{height:100%;background:var(--success);transition:width .2s;}
+.budget-status{font-size:12px;font-weight:700;}
+
+.grid-2{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.card h3{margin:0 0 12px;font-size:14px;}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
+.filter-row label{font-size:12px;color:var(--text-dim);white-space:nowrap;}
+.filter-row input{flex:1;min-width:140px;}
+
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+th{background:var(--bg);color:var(--text-dim);padding:8px;font-weight:700;border-bottom:1px solid var(--border);text-align:center;font-size:12px;white-space:nowrap;}
+td{padding:7px 9px;border-bottom:1px solid var(--border);text-align:center;font-size:12px;}
+tbody tr[data-id]{cursor:pointer;}
+tbody tr[data-id]:hover td{background:var(--bg);}
+tbody tr.selected td{background:#dbeafe !important;color:#1e3a8a;}
+body.dark tbody tr.selected td{background:#1e3a8a !important;color:#dbeafe;}
+.empty-row{color:var(--text-dim);padding:18px !important;}
+.table-wrap{max-height:460px;overflow:auto;border-radius:8px;}
+.table-footer{font-size:11px;color:var(--text-dim);margin-top:8px;display:flex;justify-content:space-between;}
+
+@media (max-width:900px){ .grid-2{grid-template-columns:1fr;} .kpi-row{grid-template-columns:1fr;} }
+
+/* ---------- Modal ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:400px;max-width:100%;max-height:88vh;overflow:auto;}
+.modal-title{font-size:15px;font-weight:800;margin:0 0 14px;}
+.modal-msg{color:var(--text);font-size:13px;line-height:1.6;white-space:pre-line;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="pageLogin" class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">🔐</div>
+    <div class="auth-title">ĐĂNG NHẬP</div>
+    <div class="auth-subtitle">Vui lòng đăng nhập để quản lý sổ chi tiêu</div>
+    <div class="form-group"><label>Tên đăng nhập:</label><input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập..."></div>
+    <div class="form-group"><label>Mật khẩu:</label><input type="password" id="loginPassword" placeholder="Nhập mật khẩu..."></div>
+    <div class="form-error" id="loginMsg"></div>
+    <button class="btn btn-primary btn-block" id="btnLogin">Đăng Nhập</button>
+    <div class="auth-footer">Chưa có tài khoản? <button class="link-plain" id="btnGoRegister">Đăng ký ngay</button></div>
+  </div>
+</div>
+
+<!-- ===================== REGISTER ===================== -->
+<div id="pageRegister" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div class="auth-logo">📝</div>
+    <div class="auth-title">ĐĂNG KÝ TÀI KHOẢN</div>
+    <div class="auth-subtitle">Tạo tài khoản mới để bắt đầu ghi chép chi tiêu</div>
+    <div class="form-group"><label>Họ và tên:</label><input type="text" id="regFullname" placeholder="Nhập họ và tên của bạn..."></div>
+    <div class="form-group"><label>Tên đăng nhập (*):</label><input type="text" id="regUsername" placeholder="Chọn tên đăng nhập..."></div>
+    <div class="form-group"><label>Email liên hệ:</label><input type="text" id="regEmail" placeholder="email@domain.com"></div>
+    <div class="form-group"><label>Mật khẩu (*):</label><input type="password" id="regPassword" placeholder="Tạo mật khẩu..."></div>
+    <div class="form-group"><label>Xác nhận mật khẩu (*):</label><input type="password" id="regConfirm" placeholder="Nhập lại mật khẩu..."></div>
+    <div class="form-error" id="regMsg"></div>
+    <button class="btn btn-primary btn-block" id="btnRegisterSubmit">Đăng Ký Tài Khoản</button>
+    <div class="auth-footer">Đã có tài khoản? <button class="link-plain" id="btnGoLogin">Đăng nhập ngay</button></div>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="pageApp" class="hidden">
+  <div class="app-wrap">
+    <div class="app-header">
+      <div>
+        <div class="app-title">💰 SỔ QUẢN LÝ CHI TIÊU CÁ NHÂN</div>
+        <div class="app-subtitle">Theo dõi thu nhập, chi tiêu và kiểm soát tài chính thông minh</div>
+        <div class="app-subtitle2" id="lblSubtitle"></div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="btnTheme">🌙 Chế độ tối</button>
+        <button class="btn" id="btnSetBudget">⚙️ Đặt Ngân Sách</button>
+        <button class="btn" id="btnChangePassword">🔑 Đổi Mật Khẩu</button>
+        <button class="btn btn-danger" id="btnLogout">🚪 Đăng Xuất</button>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-title">🟢 Tổng Thu Nhập</div><div class="kpi-value" id="lblTongThu" style="color:var(--success)">0 đ</div></div>
+      <div class="kpi-card"><div class="kpi-title">🔴 Tổng Chi Tiêu</div><div class="kpi-value" id="lblTongChi" style="color:var(--danger)">0 đ</div></div>
+      <div class="kpi-card"><div class="kpi-title">🔵 Số Dư Còn Lại</div><div class="kpi-value" id="lblSoDu">0 đ</div></div>
+    </div>
+
+    <div class="budget-card">
+      <div class="budget-top">
+        <span>⚠️ Ngân Sách Tháng: <b id="lblHanMuc">5.000.000 đ</b></span>
+        <span class="budget-status" id="lblCanhBao">Đã chi: 0%</span>
+      </div>
+      <div class="pbar"><div class="pbar-fill" id="barNganSach" style="width:0%"></div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Thông tin giao dịch</h3>
+        <div class="form-group"><label>Ngày giao dịch:</label><input type="date" id="dateNgay"></div>
+        <div class="form-group"><label>Loại giao dịch:</label>
+          <select id="cboLoai"><option>Chi tiêu</option><option>Thu nhập</option></select>
+        </div>
+        <div class="form-group"><label>Danh mục:</label>
+          <input type="text" id="cboDanhMuc" list="categoryList" placeholder="Chọn hoặc nhập danh mục...">
+          <datalist id="categoryList">
+            <option value="Ăn uống"></option><option value="Đi lại, xăng xe"></option><option value="Mua sắm"></option>
+            <option value="Hóa đơn & Tiện ích"></option><option value="Tiền nhà / Phòng trọ"></option><option value="Giải trí & Bạn bè"></option>
+            <option value="Tiền lương"></option><option value="Thưởng & Thu nhập phụ"></option><option value="Khác"></option>
+          </datalist>
+        </div>
+        <div class="form-group"><label>Số tiền (VNĐ):</label><input type="text" id="txtSoTien" placeholder="Ví dụ: 50000"></div>
+        <div class="form-group"><label>Ghi chú / Chi tiết:</label><input type="text" id="txtGhiChu" placeholder="Ví dụ: Ăn phở bò sáng..."></div>
+        <div class="action-row">
+          <button class="btn btn-primary" id="btnThem">➕ Thêm</button>
+          <button class="btn" id="btnSua">✏️ Sửa</button>
+          <button class="btn btn-danger" id="btnXoa">🗑️ Xóa</button>
+          <button class="btn" id="btnLamMoi">🔄 Làm Mới</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Lịch sử giao dịch</h3>
+        <div class="filter-row">
+          <label>Thời gian:</label>
+          <select id="cboLocThoiGian"><option>Tất cả</option><option>Hôm nay</option><option>Tuần này</option><option>Tháng này</option></select>
+          <label>Loại:</label>
+          <select id="cboLocLoai"><option>Tất cả</option><option>Chi tiêu</option><option>Thu nhập</option></select>
+          <input type="text" id="txtTimKiem" placeholder="🔍 Tìm theo ghi chú, danh mục...">
+          <button class="btn" id="btnLamMoiBang">🔄 Tải lại</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Ngày</th><th>Loại</th><th>Danh Mục</th><th>Số Tiền</th><th>Ghi Chú</th></tr></thead><tbody id="tblBody"></tbody></table>
+        </div>
+        <div class="table-footer">
+          <span id="lblStatus">Hiển thị 0 / 0 giao dịch</span>
+          <span id="lblTotalCount">Tổng số: 0 giao dịch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ===================== Helpers ===================== */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function formatMoney(v){ const n=Math.trunc(v||0); return n.toLocaleString('en-US').replace(/,/g,'.')+' đ'; }
+function parseMoney(text){ const cleaned=String(text||'').replace(/\./g,'').replace(/,/g,'').replace(/đ/gi,'').replace(/\s/g,'').trim(); return /^\d+$/.test(cleaned) ? parseInt(cleaned) : 0; }
+function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+function openModal(html){
+  const root=document.getElementById('modalRoot');
+  root.innerHTML=`<div class="modal-overlay"><div class="modal-box">${html}</div></div>`;
+  const overlay=root.querySelector('.modal-overlay');
+  overlay.addEventListener('mousedown', e=>{ if(e.target===overlay) closeModal(); });
+  document.addEventListener('keydown', escHandler);
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; document.removeEventListener('keydown', escHandler); }
+function escHandler(e){ if(e.key==='Escape') closeModal(); }
+function showAlert(title,msg,onClose){
+  openModal(`<h3 class="modal-title">${esc(title)}</h3><p class="modal-msg">${esc(msg)}</p><div class="modal-actions"><button class="btn btn-primary" id="btnAlertOk">OK</button></div>`);
+  document.getElementById('btnAlertOk').onclick=()=>{ closeModal(); if(onClose) onClose(); };
+}
+function showConfirm(title,msg){
+  return new Promise(resolve=>{
+    openModal(`<h3 class="modal-title">${esc(title)}</h3><p class="modal-msg">${esc(msg)}</p><div class="modal-actions"><button class="btn" id="cfNo">Không</button><button class="btn btn-danger" id="cfYes">Có</button></div>`);
+    document.getElementById('cfNo').onclick=()=>{closeModal();resolve(false);};
+    document.getElementById('cfYes').onclick=()=>{closeModal();resolve(true);};
+  });
+}
+
+/* ===================== Data layer ===================== */
+const STORAGE_KEY='expense_tracker_data_v1';
+let DB=null;
+
+function loadData(){
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ DB=JSON.parse(raw); return true; } }catch(e){}
+  return false;
+}
+function saveData(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }catch(e){} }
+function seedData(){
+  DB={
+    users:{
+      admin:{fullname:"Quản Trị Viên",password:"123",email:"admin@gmail.com",budget:5000000},
+      abc:{fullname:"abc",password:"abc",email:"abc",budget:5000000},
+      xyz:{fullname:"xyz",password:"123",email:"xyz@gmail.com",budget:5000000}
+    },
+    transactions:{
+      admin:[
+        {id:1,date:"2026-10-18",type:"Thu nhập",category:"Tiền lương",amount:15000000,note:"Lương tháng này"},
+        {id:2,date:"2026-10-18",type:"Chi tiêu",category:"Ăn uống",amount:65000,note:"Ăn trưa phở bò"},
+        {id:3,date:"2026-10-18",type:"Chi tiêu",category:"Đi lại, xăng xe",amount:100000,note:"Đổ xăng xe máy"}
+      ],
+      abc:[],
+      xyz:[{id:1,date:"2026-10-25",type:"Chi tiêu",category:"Ăn uống",amount:50000,note:"ăn sáng"}]
+    }
+  };
+  saveData();
+}
+function initDB(){ if(!loadData() || !DB.users || !Object.keys(DB.users).length) seedData(); }
+
+/* ===================== App state ===================== */
+let currentUser=null;
+let selectedTransactionId=null;
+let isDarkMode=false;
+
+function showPage(id){
+  ['pageLogin','pageRegister','pageApp'].forEach(p=>document.getElementById(p).classList.toggle('hidden', p!==id));
+}
+
+/* ===================== Login / Register ===================== */
+function handleLogin(){
+  const username=document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password=document.getElementById('loginPassword').value.trim();
+  const msgEl=document.getElementById('loginMsg');
+  if(!username || !password){ msgEl.textContent='Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!'; msgEl.className='form-error'; return; }
+  const users=DB.users;
+  if(users[username] && users[username].password===password){
+    currentUser=username;
+    msgEl.textContent='';
+    openApp();
+  } else {
+    msgEl.textContent='Sai tên đăng nhập hoặc mật khẩu!'; msgEl.className='form-error';
+  }
+}
+function handleRegister(){
+  const fullname=document.getElementById('regFullname').value.trim();
+  const username=document.getElementById('regUsername').value.trim().toLowerCase();
+  const email=document.getElementById('regEmail').value.trim();
+  const password=document.getElementById('regPassword').value.trim();
+  const confirm=document.getElementById('regConfirm').value.trim();
+  const msgEl=document.getElementById('regMsg');
+  if(!username || !password){ msgEl.textContent='Vui lòng nhập tên đăng nhập và mật khẩu!'; return; }
+  if(password!==confirm){ msgEl.textContent='Mật khẩu xác nhận không trùng khớp!'; return; }
+  if(DB.users[username]){ msgEl.textContent='Tên đăng nhập đã tồn tại!'; return; }
+  DB.users[username]={fullname:fullname||username, password, email, budget:5000000};
+  DB.transactions[username]=[];
+  saveData();
+  showAlert('Thông báo','Đăng ký thành công! Hãy đăng nhập.', ()=>{
+    document.getElementById('loginUsername').value=username;
+    document.getElementById('loginPassword').value='';
+    const le=document.getElementById('loginMsg'); le.textContent='Đăng ký thành công! Hãy đăng nhập.'; le.className='form-error success';
+    showPage('pageLogin');
+  });
+}
+
+/* ===================== Main app ===================== */
+function openApp(){
+  const user=DB.users[currentUser];
+  document.title=`Quản Lý Chi Tiêu - ${user.fullname}`;
+  document.getElementById('lblSubtitle').textContent=`Tài khoản: ${user.fullname} (${currentUser})`;
+  document.getElementById('dateNgay').value=todayStr();
+  showPage('pageApp');
+  loadTransactions();
+}
+function getUserBudget(){ return (DB.users[currentUser]||{}).budget || 5000000; }
+function getUserTransactions(){ return DB.transactions[currentUser] || []; }
+function saveUserTransactions(list){ DB.transactions[currentUser]=list; saveData(); }
+
+function toggleTheme(){
+  isDarkMode=!isDarkMode;
+  document.body.classList.toggle('dark', isDarkMode);
+  document.getElementById('btnTheme').textContent = isDarkMode ? '☀️ Chế độ sáng' : '🌙 Chế độ tối';
+}
+function openSetBudget(){
+  openModal(`
+    <h3 class="modal-title">Hạn mức chi tiêu</h3>
+    <p class="modal-msg">Nhập hạn mức ngân sách tháng (VNĐ):</p>
+    <input type="number" id="budgetInput" min="0" max="2000000000" step="500000" value="${getUserBudget()}">
+    <div class="modal-actions"><button class="btn" id="btnCancelBudget">Hủy</button><button class="btn btn-primary" id="btnSaveBudget">Lưu</button></div>`);
+  document.getElementById('btnCancelBudget').onclick=closeModal;
+  document.getElementById('btnSaveBudget').onclick=()=>{
+    const val=parseInt(document.getElementById('budgetInput').value)||0;
+    DB.users[currentUser].budget=val;
+    saveData(); closeModal(); loadTransactions();
+  };
+}
+function openChangePassword(){
+  openModal(`
+    <h3 class="modal-title">🔑 ĐỔI MẬT KHẨU</h3>
+    <div class="form-group"><label>Mật khẩu hiện tại (*):</label><input type="password" id="cpOld" placeholder="Nhập mật khẩu đang dùng..."></div>
+    <div class="form-group"><label>Mật khẩu mới (*):</label><input type="password" id="cpNew" placeholder="Tạo mật khẩu mới..."></div>
+    <div class="form-group"><label>Xác nhận mật khẩu mới (*):</label><input type="password" id="cpConfirm" placeholder="Nhập lại mật khẩu mới..."></div>
+    <div class="form-error" id="cpMsg"></div>
+    <div class="modal-actions"><button class="btn" id="btnCpCancel">Hủy</button><button class="btn btn-primary" id="btnCpSave">Lưu Mật Khẩu</button></div>`);
+  document.getElementById('btnCpCancel').onclick=closeModal;
+  document.getElementById('btnCpSave').onclick=()=>{
+    const oldPass=document.getElementById('cpOld').value.trim();
+    const newPass=document.getElementById('cpNew').value.trim();
+    const confirmPass=document.getElementById('cpConfirm').value.trim();
+    const msgEl=document.getElementById('cpMsg');
+    if(!oldPass||!newPass||!confirmPass){ msgEl.textContent='Vui lòng điền đầy đủ thông tin!'; return; }
+    if(DB.users[currentUser].password!==oldPass){ msgEl.textContent='Mật khẩu hiện tại không đúng!'; return; }
+    if(newPass!==confirmPass){ msgEl.textContent='Mật khẩu xác nhận không trùng khớp!'; return; }
+    if(oldPass===newPass){ msgEl.textContent='Mật khẩu mới không được trùng mật khẩu cũ!'; return; }
+    DB.users[currentUser].password=newPass;
+    saveData();
+    closeModal();
+    showAlert('Thông báo','Đổi mật khẩu thành công!');
+  };
+}
+async function handleLogout(){
+  const ok=await showConfirm('Đăng xuất','Bạn có muốn đăng xuất không?');
+  if(ok){
+    currentUser=null;
+    document.getElementById('loginPassword').value='';
+    showPage('pageLogin');
+  }
+}
+
+function resetFilters(){
+  document.getElementById('cboLocThoiGian').value='Tất cả';
+  document.getElementById('cboLocLoai').value='Tất cả';
+  document.getElementById('txtTimKiem').value='';
+  loadTransactions();
+}
+function loadTransactions(){
+  const transactions=getUserTransactions();
+  const tongThu=transactions.filter(t=>t.type==='Thu nhập').reduce((s,t)=>s+t.amount,0);
+  const tongChi=transactions.filter(t=>t.type==='Chi tiêu').reduce((s,t)=>s+t.amount,0);
+  const soDu=tongThu-tongChi;
+
+  document.getElementById('lblTongThu').textContent=formatMoney(tongThu);
+  document.getElementById('lblTongChi').textContent=formatMoney(tongChi);
+  const soDuEl=document.getElementById('lblSoDu');
+  soDuEl.textContent=formatMoney(soDu);
+  soDuEl.style.color = soDu<0 ? 'var(--danger)' : 'var(--blue)';
+
+  const today=new Date(); today.setHours(0,0,0,0);
+  let chiThangNay=0;
+  for(const t of transactions){
+    if(t.type==='Chi tiêu'){
+      const td=new Date(t.date+'T00:00:00');
+      if(td.getFullYear()===today.getFullYear() && td.getMonth()===today.getMonth()) chiThangNay+=t.amount;
+    }
+  }
+  const budget=getUserBudget();
+  document.getElementById('lblHanMuc').textContent=formatMoney(budget);
+  const percent = budget>0 ? Math.floor((chiThangNay/budget)*100) : 0;
+  document.getElementById('barNganSach').style.width=Math.min(percent,100)+'%';
+  const canhBaoEl=document.getElementById('lblCanhBao');
+  const barEl=document.getElementById('barNganSach');
+  if(percent>=100){ canhBaoEl.textContent=`Vượt hạn mức (${percent}%)`; canhBaoEl.style.color='var(--danger)'; barEl.style.background='var(--danger)'; }
+  else if(percent>=80){ canhBaoEl.textContent=`Cảnh báo chi tiêu (${percent}%)`; canhBaoEl.style.color='var(--warn)'; barEl.style.background='var(--warn)'; }
+  else{ canhBaoEl.textContent=`Đã chi: ${percent}%`; canhBaoEl.style.color='var(--success)'; barEl.style.background='var(--success)'; }
+
+  const locTg=document.getElementById('cboLocThoiGian').value;
+  const locLoai=document.getElementById('cboLocLoai').value;
+  const tuKhoa=document.getElementById('txtTimKiem').value.trim().toLowerCase();
+  const startOfWeek=new Date(today); startOfWeek.setDate(today.getDate()-((today.getDay()+6)%7));
+
+  let filtered=transactions.filter(t=>{
+    if(locLoai!=='Tất cả' && t.type!==locLoai) return false;
+    const cat=(t.category||'').toLowerCase(), note=(t.note||'').toLowerCase();
+    if(tuKhoa && !cat.includes(tuKhoa) && !note.includes(tuKhoa)) return false;
+    const td=new Date((t.date||'2000-01-01')+'T00:00:00');
+    if(locTg==='Hôm nay' && td.getTime()!==today.getTime()) return false;
+    if(locTg==='Tuần này' && td<startOfWeek) return false;
+    if(locTg==='Tháng này' && (td.getFullYear()!==today.getFullYear()||td.getMonth()!==today.getMonth())) return false;
+    return true;
+  });
+  filtered.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.id-a.id));
+
+  const tbody=document.getElementById('tblBody');
+  tbody.innerHTML = filtered.map(t=>{
+    const color = t.type==='Thu nhập' ? 'var(--success)' : 'var(--danger)';
+    return `<tr data-id="${t.id}" class="${selectedTransactionId===t.id?'selected':''}">
+      <td>${esc(t.date)}</td><td style="color:${color}">${esc(t.type)}</td><td>${esc(t.category)}</td>
+      <td style="text-align:right;color:${color}">${formatMoney(t.amount)}</td><td style="text-align:left">${esc(t.note||'')}</td></tr>`;
+  }).join('') || `<tr><td colspan="5" class="empty-row">Không có giao dịch nào</td></tr>`;
+  tbody.querySelectorAll('tr[data-id]').forEach(row=>row.addEventListener('click',()=>{ selectRow(parseInt(row.dataset.id)); }));
+
+  document.getElementById('lblStatus').textContent=`Hiển thị ${filtered.length} / ${transactions.length} giao dịch`;
+  document.getElementById('lblTotalCount').textContent=`Tổng số: ${transactions.length} giao dịch`;
+}
+function selectRow(id){
+  selectedTransactionId=id;
+  const t=getUserTransactions().find(x=>x.id===id);
+  if(t){
+    document.getElementById('dateNgay').value=t.date;
+    document.getElementById('cboLoai').value=t.type;
+    document.getElementById('cboDanhMuc').value=t.category;
+    document.getElementById('txtSoTien').value=t.amount;
+    document.getElementById('txtGhiChu').value=t.note||'';
+  }
+  loadTransactions();
+}
+function themGiaoDich(){
+  const amount=parseMoney(document.getElementById('txtSoTien').value);
+  if(amount<=0){ showAlert('Chú ý','Vui lòng nhập số tiền hợp lệ!'); document.getElementById('txtSoTien').focus(); return; }
+  const transactions=getUserTransactions();
+  const newId=Math.max(0, ...transactions.map(t=>t.id||0))+1;
+  const loai=document.getElementById('cboLoai').value;
+  const newTrans={ id:newId, date:document.getElementById('dateNgay').value||todayStr(), type:loai,
+    category:document.getElementById('cboDanhMuc').value.trim()||'Khác', amount, note:document.getElementById('txtGhiChu').value.trim() };
+  transactions.push(newTrans);
+  saveUserTransactions(transactions);
+
+  if(loai==='Chi tiêu'){
+    const today=new Date();
+    const chiThang=transactions.filter(t=>t.type==='Chi tiêu' && new Date(t.date+'T00:00:00').getMonth()===today.getMonth()).reduce((s,t)=>s+t.amount,0);
+    const budget=getUserBudget();
+    if(chiThang>budget){
+      showAlert('Cảnh báo chi tiêu', `Khoản chi này khiến tổng chi tiêu tháng (${formatMoney(chiThang)}) vượt ngân sách (${formatMoney(budget)})!`);
+    } else {
+      showAlert('Thông báo','Đã thêm giao dịch thành công!');
+    }
+  } else {
+    showAlert('Thông báo','Đã thêm giao dịch thành công!');
+  }
+  loadTransactions(); lamMoiForm();
+}
+function suaGiaoDich(){
+  if(selectedTransactionId==null){ showAlert('Chú ý','Vui lòng chọn dòng cần sửa!'); return; }
+  const amount=parseMoney(document.getElementById('txtSoTien').value);
+  if(amount<=0){ showAlert('Chú ý','Vui lòng nhập số tiền hợp lệ!'); return; }
+  const transactions=getUserTransactions();
+  const t=transactions.find(x=>x.id===selectedTransactionId);
+  if(t){
+    t.date=document.getElementById('dateNgay').value||todayStr();
+    t.type=document.getElementById('cboLoai').value;
+    t.category=document.getElementById('cboDanhMuc').value.trim()||'Khác';
+    t.amount=amount;
+    t.note=document.getElementById('txtGhiChu').value.trim();
+    saveUserTransactions(transactions);
+    showAlert('Thông báo','Cập nhật giao dịch thành công!');
+    loadTransactions(); lamMoiForm();
+  }
+}
+async function xoaGiaoDich(){
+  if(selectedTransactionId==null){ showAlert('Chú ý','Vui lòng chọn dòng cần xóa!'); return; }
+  const ok=await showConfirm('Xác nhận','Bạn có chắc chắn muốn xóa giao dịch này không?');
+  if(ok){
+    let transactions=getUserTransactions();
+    transactions=transactions.filter(t=>t.id!==selectedTransactionId);
+    saveUserTransactions(transactions);
+    showAlert('Thông báo','Đã xóa giao dịch!');
+    loadTransactions(); lamMoiForm();
+  }
+}
+function lamMoiForm(){
+  selectedTransactionId=null;
+  document.getElementById('dateNgay').value=todayStr();
+  document.getElementById('cboLoai').value='Chi tiêu';
+  document.getElementById('cboDanhMuc').value='';
+  document.getElementById('txtSoTien').value='';
+  document.getElementById('txtGhiChu').value='';
+  loadTransactions();
+}
+
+/* ===================== Event bindings ===================== */
+function setupHandlers(){
+  document.getElementById('btnGoRegister').onclick=()=>showPage('pageRegister');
+  document.getElementById('btnGoLogin').onclick=()=>showPage('pageLogin');
+  document.getElementById('btnLogin').onclick=handleLogin;
+  document.getElementById('loginPassword').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+  document.getElementById('btnRegisterSubmit').onclick=handleRegister;
+
+  document.getElementById('btnTheme').onclick=toggleTheme;
+  document.getElementById('btnSetBudget').onclick=openSetBudget;
+  document.getElementById('btnChangePassword').onclick=openChangePassword;
+  document.getElementById('btnLogout').onclick=handleLogout;
+
+  document.getElementById('btnThem').onclick=themGiaoDich;
+  document.getElementById('btnSua').onclick=suaGiaoDich;
+  document.getElementById('btnXoa').onclick=xoaGiaoDich;
+  document.getElementById('btnLamMoi').onclick=lamMoiForm;
+
+  document.getElementById('cboLocThoiGian').addEventListener('change', loadTransactions);
+  document.getElementById('cboLocLoai').addEventListener('change', loadTransactions);
+  document.getElementById('txtTimKiem').addEventListener('input', loadTransactions);
+  document.getElementById('btnLamMoiBang').onclick=resetFilters;
+}
+
+/* ===================== Bootstrap ===================== */
+(function init(){
+  initDB();
+  setupHandlers();
+  showPage('pageLogin');
+})();
+</script>
+</body>
+</html>
